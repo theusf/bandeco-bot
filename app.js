@@ -1,6 +1,7 @@
 var app = require("./config/server.js");
 var cliente = require("./config/twitter.js"); //Importa o arquivo twitter.js
 var CronJob = require('cron').CronJob; //Importa o "node-cron"
+var http = require('http');
 
 
 //Configura a porta disponível ou a porta 3000
@@ -35,7 +36,19 @@ app.get("/posta", function (req, res) {
 });
 
 app.get("/", function (req, res) {
-
     res.send('Estamos online')
-
 });
+
+var anotherJob = new CronJob('0 */1 * * * *', function () {
+    //Roda de 45 em 45 minutos
+
+    http.get('https://polar-bayou-92629.herokuapp.com')
+
+},
+    function () {
+        //Função executada quando o job finaliza
+        console.log("Testando manter onlinte!")
+    },
+    true, //Ativa o job
+    'America/Sao_Paulo' //Fuso horário.
+);
