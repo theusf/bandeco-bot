@@ -106,3 +106,4 @@ dist
 config.js
 ./config.js
 config/config.js
+.config/config.js
