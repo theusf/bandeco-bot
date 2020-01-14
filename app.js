@@ -35,7 +35,7 @@ app.get("/posta", function (req, res) {
 });
 
 app.get("/", function (req, res) {
-    console.log('Estamos online')
 
+    res.send('Estamos online')
 
 });
