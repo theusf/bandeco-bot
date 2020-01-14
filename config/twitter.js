@@ -1,15 +1,10 @@
 var Twitter = require('twitter');
-var config = require('./config.js');
+var config = require('./twitterConfig');
 
-var cliente = new Twitter({
-    consumer_key: config.consumer_key,
-    consumer_secret: config.consumer_secret,
-    access_token_key: config.access_token,
-    access_token_secret: config.access_token_secret
-});
+var cliente = new Twitter(config);
 
 cliente.tweetar = function (tweet) {
-    
+
     console.log("tweet =", tweet);
     console.log(process.env.consumer_key)
 
