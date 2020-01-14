@@ -33,3 +33,9 @@ app.get("/posta", function (req, res) {
     cliente.tweetar("bom dia vamo acorda     https://twitter.com/i/status/1217102231683653633");
 
 });
+
+app.get("/", function (req, res) {
+    console.log('Estamos online')
+
+
+});
