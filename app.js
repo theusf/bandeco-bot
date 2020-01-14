@@ -42,7 +42,7 @@ app.get("/", function (req, res) {
 var anotherJob = new CronJob('0 */1 * * * *', function () {
     //Roda de 45 em 45 minutos
 
-    http.get('https://polar-bayou-92629.herokuapp.com')
+    http.get('http://polar-bayou-92629.herokuapp.com')
 
 },
     function () {
