@@ -13,7 +13,7 @@ app.listen(server_port, server_host, function () {
     console.log("Aplicação online.");
 });
 
-var job = new CronJob('00 10 08 * * 1-7', function () {
+var job = new CronJob('00 01 10 * * 1-7', function () {
     //Roda todo dia às 0:10:00
 
     cliente.tweetar("bom dia vamo acorda     https://twitter.com/i/status/1217102231683653633");
@@ -40,7 +40,7 @@ app.get("/", function (req, res) {
 });
 
 var anotherJob = new CronJob('0 */25 * * * *', function () {
-    //Roda de 45 em 45 minutos
+    //Roda de 25 em 25 minutos
 
     http.get('http://polar-bayou-92629.herokuapp.com')
 
