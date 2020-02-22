@@ -102,9 +102,12 @@ dist
 
 # TernJS port file
 .tern-port
+<<<<<<< HEAD
 
 config.js
 ./config.js
 config/config.js
 .config/config.js
 .DS_Sore
+=======
+>>>>>>> d1e1cb0e486e6cce2e08de48e80953467ebabfa2
