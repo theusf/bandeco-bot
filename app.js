@@ -60,8 +60,6 @@ const  parsePage = ( data ) => {
 
        $td.each(async (i, elem) => {
 
-            let refeicao_complemento = '';
-
             if (elem.children[0].data){
                 obj['REFEICAO']+= elem.children[0].data 
             }
@@ -75,9 +73,7 @@ const  parsePage = ( data ) => {
                 }
                 else
                     obj[tipo] = elem.children[0].children[0].parent.next.data
-                
             }       
-
         })
 
         output.push(obj)
