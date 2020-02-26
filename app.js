@@ -31,53 +31,57 @@ const getPage = ( cb ) => {
 
 const savePage = ( data ) => {
     let contents = "'use strict';" + '\n\n';
-        contents += 'const HTMLItArticles = ';
+        contents += 'const Cardapio = ';
         contents += JSON.stringify( data ) + ';\n\n';
         contents += 'module.exports = HTMLItArticles;';
 
         fs.writeFileSync(__dirname + '/articles.js', contents);
 };
 
-const  parsePage = async ( data ) => {
+const  parsePage = ( data ) => {
 
     const $ = cheerio.load(data)
 
     let output = [];
     //console.log($.root().html())
-    const obj = {}
 
     //console.log(cheerio.text($('table.fundo_cardapio', 'tbody')))
-    $('table.fundo_cardapio').each( (_i, elem ) => {
+    $('table.fundo_cardapio').each( async (i, elem ) => {
         
        let $titulo = $(elem).find('p.titulo');
        let $tbody = $(elem).find('tbody');
        let $tr = $($tbody).find('tr');
        let $td = $($tr).find('td');
 
-       obj[_i] = "A";
+       const obj = {
+        REFEICAO: ''
+       }
+       
 
-       $td.each((i, elem) => {
+       $td.each(async (i, elem) => {
 
-            if (elem.children[0].data)
-                //console.log(elem.children[0].data);
+            let refeicao_complemento = '';
+
+            if (elem.children[0].data){
+                obj['REFEICAO']+= elem.children[0].data 
+            }
+            
             if (elem.children[0].tagName == 'strong') {
                 let tipo = elem.children[0].children[0].data;
-                console.log(tipo);
-                //console.log(elem.children[0].children[0].data)
-                obj[tipo] = '';
-                if (elem.children[0].next.next != null)
-                    if (elem.children[0].next.next.tagName == 'br') {
-                        //console.log(elem.children[0].next.next.next.data + 'e' + elem.children[0].children[0].parent.next.data)
-                        let refeicao = (elem.children[0].next.next.next.data + '' + elem.children[0].children[0].parent.next.data);
-                        obj[tipo] = refeicao;
-                    }
-                //console.log(elem.children[0].children[0].parent.next.data)
-                //obj[tipo] += elem.children[0].children[0].parent.next.data
-                console.log(obj);
-            }
+
+                if (elem.children[0].next.next != null) {
+                    if (elem.children[0].next.next.tagName == 'br') 
+                        obj[tipo] = elem.children[0].next.next.next.data;;
+                }
+                else
+                    obj[tipo] = elem.children[0].children[0].parent.next.data
+                
+            }       
+
         })
 
-        output.push(obj);
+        output.push(obj)
+
     });
 
     return output;
@@ -86,6 +90,7 @@ const  parsePage = async ( data ) => {
 
 getPage( (html) => {
     let data = parsePage(html);
+    //console.log(data)
     savePage(data);
 });
 
