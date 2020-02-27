@@ -126,7 +126,7 @@ app.get("/posta", function (req, res) {
     getPage( (html) => {
         let data = parsePage(html);
 
-        cliente.tweetar(JSON.stringify(data));
+        cliente.tweetar(JSON.stringify(data[0]));
 
     });
 });
