@@ -124,8 +124,7 @@ app.get("/posta", function (req, res) {
     console.log('Fez um get!')
 
     getPage( (html) => {
-        data = parsePage(html);
-        console.log(data)
+        let data = parsePage(html);
 
         cliente.tweetar(JSON.stringify(data));
 
@@ -146,7 +145,6 @@ var keepAwake = new CronJob('0 */25 * * * *', function () {
     true, //Ativa o job
     'America/Sao_Paulo' //Fuso horário.
 );
-
 
 
 
