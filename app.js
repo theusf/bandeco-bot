@@ -7,7 +7,6 @@ var http = require('http');
 const request = require('request');
 const cheerio = require('cheerio');
 const url = 'https://www.prefeitura.unicamp.br/apps/site/cardapio.php';
-const fs = require('fs');
 
 //Configura a porta disponível ou a porta 3000
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
@@ -18,10 +17,10 @@ app.listen(server_port, server_host, function () {
     console.log("Aplicação online.");
 });
 
-
 const getPage = ( cb ) => {
-    request(url, {
-        timeout: 3000
+    request(url,  {
+        timeout: 3000,
+        encoding: "latin1"
     }, (error, response, body) => {
         if(!error) {
             cb(body);
@@ -29,39 +28,30 @@ const getPage = ( cb ) => {
     });
 };
 
-const savePage = ( data ) => {
-    let contents = "'use strict';" + '\n\n';
-        contents += 'const Cardapio = ';
-        contents += JSON.stringify( data ) + ';\n\n';
-        contents += 'module.exports = HTMLItArticles;';
-
-        fs.writeFileSync(__dirname + '/articles.js', contents);
-};
-
 const  parsePage = ( data ) => {
 
     const $ = cheerio.load(data)
 
     let output = [];
-    //console.log($.root().html())
 
-    //console.log(cheerio.text($('table.fundo_cardapio', 'tbody')))
     $('table.fundo_cardapio').each( async (i, elem ) => {
         
-       let $titulo = $(elem).find('p.titulo');
+       let $titulo = $('p.titulo');
        let $tbody = $(elem).find('tbody');
        let $tr = $($tbody).find('tr');
        let $td = $($tr).find('td');
 
+        $titulo.text();
+
        const obj = {
+        TITULO: $titulo.text(),
         REFEICAO: ''
        }
-       
 
        $td.each(async (i, elem) => {
 
             if (elem.children[0].data){
-                obj['REFEICAO']+= elem.children[0].data 
+                obj['REFEICAO']+= '\r\n' + elem.children[0].data
             }
             
             if (elem.children[0].tagName == 'strong') {
@@ -76,57 +66,84 @@ const  parsePage = ( data ) => {
             }       
         })
 
+
         output.push(obj)
 
     });
-
     return output;
 };
 
 
+var job = new CronJob('00 01 9 * * 1-5', function () {
+//    Roda todo dia às 0:09:00
+
 getPage( (html) => {
     let data = parsePage(html);
-    //console.log(data)
-    savePage(data);
+
+    const emojis = {
+        ABACAXI: '🍍',
+        MAÇA: '🍎',
+        MANGA: '🥭',
+        UVA: '🍇',
+        TANGERINA: '🍊',
+        LARANJA: '🍊',
+        LIMÃO: '🍋'
+    }
+
+    const titulo = `${data[0]['TITULO']}`
+
+    const titulo_refeicoes = {
+        0: 'Almoço 🍽️',
+        1: 'Almoço Vegetariano 🥗🍴',
+        2: 'Jantar 🍲',
+        3: 'Jantar Vegetariano 🥗🍴'
+    }
+
+    for (var i = 0; i<4 ; i++ ) {
+        const suco =  data[i]['SUCO:'];
+        const tweet = `${titulo}\r\n${titulo_refeicoes[i]}\r\n${data[i]['REFEICAO']}\r\n \r\n PRATO PRINCIPAL: ${data[i]['PRATO PRINCIPAL:']}\r\n \r\nSALADA: ${data[i]['SALADA:']}\r\n \r\nSOBREMESA: ${data[i]['SOBREMESA:']}\r\n \r\nSUCO: ${suco} ${(emojis[suco] ? emojis[suco] : '') }`
+        console.log(tweet)
+        cliente.tweetar(tweet);
+    }
+
+
 });
 
 
-// var job = new CronJob('00 01 10 * * 1-7', function () {
-//     //Roda todo dia às 0:10:00
-
-//     cliente.tweetar("bom dia vamo acorda     https://twitter.com/i/status/1217102231683653633");
-
-// },
-//     function () {
-//         //Função executada quando o job finaliza
-//         console.log("Cron job stopped!")
-//     },
-//     true, //Ativa o job
-//     'America/Sao_Paulo' //Fuso horário.
-// );
+},
+    function () {
+        //Função executada quando o job finaliza
+        console.log("Cron job stopped!")
+    },
+    true, //Ativa o job
+    'America/Sao_Paulo' //Fuso horário.
+);
 
 
-// app.get("/posta", function (req, res) {
-//     console.log('Fez um get!')
+app.get("/posta", function (req, res) {
+    console.log('Fez um get!')
 
-//     cliente.tweetar("bom dia vamo acorda     https://twitter.com/i/status/1217102231683653633");
+    getPage( (html) => {
+        data = parsePage(html);
+        console.log(data)
 
-// });
+        cliente.tweetar(JSON.stringify(data));
 
-// app.get("/", function (req, res) {
-//     res.send('Estamos online')
-// });
+    });
+});
 
-// var anotherJob = new CronJob('0 */25 * * * *', function () {
-//     //Roda de 25 em 25 minutos
 
-//     http.get('http://polar-bayou-92629.herokuapp.com')
+var keepAwake = new CronJob('0 */25 * * * *', function () {
+    //Roda de 25 em 25 minutos para manter o bot acordado
 
-// },
-//     function () {
-//         //Função executada quando o job finaliza
-//         console.log("Testando manter onlinte!")
-//     },
-//     true, //Ativa o job
-//     'America/Sao_Paulo' //Fuso horário.
-// );
+    http.get('https://bandecobot.herokuapp.com')
+
+},
+    function () {
+        //Função executada quando o job finaliza
+        console.log("Mantendo bot acordado")
+    },
+    true, //Ativa o job
+    'America/Sao_Paulo' //Fuso horário.
+);
+
