@@ -147,3 +147,17 @@ var keepAwake = new CronJob('0 */25 * * * *', function () {
     'America/Sao_Paulo' //Fuso horário.
 );
 
+
+
+
+app.get("/", function (req, res) {
+    console.log('Fez um get!')
+
+    getPage( (html) => {
+        const data = parsePage(html);
+        //console.log(data)
+
+        res.send(JSON.stringify(data));
+
+    });
+});
