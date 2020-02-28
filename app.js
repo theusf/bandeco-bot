@@ -73,42 +73,45 @@ const  parsePage = ( data ) => {
     return output;
 };
 
+const post = () => {
 
-var job = new CronJob('00 01 9 * * 1-5', function () {
-//    Roda todo dia às 0:09:00
-
-getPage( (html) => {
-    let data = parsePage(html);
-
-    const emojis = {
-        ABACAXI: '🍍',
-        MAÇA: '🍎',
-        MANGA: '🥭',
-        UVA: '🍇',
-        TANGERINA: '🍊',
-        LARANJA: '🍊',
-        LIMÃO: '🍋'
+    getPage( (html) => {
+        let data = parsePage(html);
+    
+        const emojis = {
+            ABACAXI: '🍍',
+            MAÇA: '🍎',
+            MANGA: '🥭',
+            UVA: '🍇',
+            TANGERINA: '🍊',
+            LARANJA: '🍊',
+            LIMÃO: '🍋'
+        }
+    
+        const titulo = `${data[0]['TITULO']}`
+    
+        const titulo_refeicoes = {
+            0: 'Almoço 🍽️',
+            1: 'Almoço Vegetariano 🥗🍴',
+            2: 'Jantar 🍲',
+            3: 'Jantar Vegetariano 🥗🍴'
+        }
+    
+        for (var i = 0; i<4 ; i++ ) {
+            const suco =  data[i]['SUCO:'];
+            const tweet = `${titulo}\r\n${titulo_refeicoes[i]}\r\n${data[i]['REFEICAO']}\r\n \r\n PRATO PRINCIPAL: ${data[i]['PRATO PRINCIPAL:']}\r\n \r\nSALADA: ${data[i]['SALADA:']}\r\n \r\nSOBREMESA: ${data[i]['SOBREMESA:']}\r\n \r\nSUCO: ${suco} ${(emojis[suco] ? emojis[suco] : '') }`
+            console.log(tweet)
+            cliente.tweetar(tweet);
+        }
     }
-
-    const titulo = `${data[0]['TITULO']}`
-
-    const titulo_refeicoes = {
-        0: 'Almoço 🍽️',
-        1: 'Almoço Vegetariano 🥗🍴',
-        2: 'Jantar 🍲',
-        3: 'Jantar Vegetariano 🥗🍴'
-    }
-
-    for (var i = 0; i<4 ; i++ ) {
-        const suco =  data[i]['SUCO:'];
-        const tweet = `${titulo}\r\n${titulo_refeicoes[i]}\r\n${data[i]['REFEICAO']}\r\n \r\n PRATO PRINCIPAL: ${data[i]['PRATO PRINCIPAL:']}\r\n \r\nSALADA: ${data[i]['SALADA:']}\r\n \r\nSOBREMESA: ${data[i]['SOBREMESA:']}\r\n \r\nSUCO: ${suco} ${(emojis[suco] ? emojis[suco] : '') }`
-        console.log(tweet)
-        cliente.tweetar(tweet);
-    }
+)};
 
 
-});
 
+var job = new CronJob('00 30 8 * * 1-5', function () {
+//    Roda todo dia às 0:08:030
+
+    post();
 
 },
     function () {
@@ -121,14 +124,10 @@ getPage( (html) => {
 
 
 app.get("/posta", function (req, res) {
-    console.log('Fez um get!')
+    console.log('faz o post!')
 
-    getPage( (html) => {
-        let data = parsePage(html);
+    post();
 
-        cliente.tweetar(JSON.stringify(data[0]));
-
-    });
 });
 
 
