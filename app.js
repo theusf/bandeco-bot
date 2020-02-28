@@ -6,7 +6,7 @@ var CronJob = require('cron').CronJob; //Importa o "node-cron"
 var http = require('http');
 const request = require('request');
 const cheerio = require('cheerio');
-const url = 'https://www.prefeitura.unicamp.br/apps/site/cardapio.php';
+const url = 'http://www.prefeitura.unicamp.br/apps/site/cardapio.php';
 
 //Configura a porta disponível ou a porta 3000
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
@@ -135,7 +135,7 @@ app.get("/posta", function (req, res) {
 var keepAwake = new CronJob('0 */25 * * * *', function () {
     //Roda de 25 em 25 minutos para manter o bot acordado
 
-    http.get('https://bandecobot.herokuapp.com')
+    http.get('http://bandecobot.herokuapp.com')
 
 },
     function () {
