@@ -108,7 +108,7 @@ const post = () => {
 
 //post();
 
-var job = new CronJob('00 30 8 * * 1-5', function () {
+var job = new CronJob('00 30 8 * * 1-6', function () {
 //    Roda todo dia às 0:08:030
 
     post();
